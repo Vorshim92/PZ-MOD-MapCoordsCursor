@@ -5,12 +5,12 @@ require "ISToolTip"  -- Ensure the base tooltip class is loaded
 ISToolTipCord = ISToolTip:derive("ISToolTipCord")
 
 
-local ISWorldMap_render = ISWorldMap.render;
+-- local ISWorldMap_render = ISWorldMap.render;
 local ISWorldMap_createChildren = ISWorldMap.createChildren;
 local ISWorldMap_onMouseMove = ISWorldMap.onMouseMove;
 local ISWorldMap_onRightMouseUp = ISWorldMap.onRightMouseUp
 ISWorldMap.showCoordinates = true  
-local ISWorldMap_instance = nil;
+-- local ISWorldMap_instance = nil;
 
 
 function ISWorldMap:createChildren(...)
@@ -26,22 +26,27 @@ function ISWorldMap:createChildren(...)
     
 end
 
--- function ISWorldMap:render(...)
---     -- ISWorldMap_instance = self;
---     ISWorldMap_render(self, ...); 
-
---     self.tooltip = ISToolTipCord:new()
---     self.tooltip:initialise()
---     self.tooltip:setVisible(false)  -- Nasconde il tooltip inizialmente
-
---     self.tooltip:addToUIManager()
-
-
--- end
-
 
 function ISWorldMap:updateTooltip(x, y)
     if not self.showCoordinates then
+        self.tooltip:setVisible(false)
+        return
+    end
+    if self.symbolsUI:onMouseMoveMap(x, y) then
+        self.tooltip:setVisible(false)
+        return
+    end
+    -- if self:isMouseOver() then
+    --     self.tooltip:setVisible(false)
+    --     return
+    -- end
+
+    if self.buttonPanel and self.buttonPanel:isMouseOver() then
+        self.tooltip:setVisible(false)
+        return
+    end
+
+    if self.optionBtn and self.optionBtn:isMouseOver() then
         self.tooltip:setVisible(false)
         return
     end
@@ -70,34 +75,57 @@ function ISWorldMap:onMouseMove(dx, dy, ...)
     return true
 end
 
+-- Nuova funzione onRightMouseUpClient
 function ISWorldMap:onRightMouseUpClient(x, y)
-	if self.symbolsUI:onRightMouseUpMap(x, y) then
-		return true
-	end
-	local playerNum = 0
-	local playerObj = getSpecificPlayer(0)
-	if not playerObj then return end -- Debug in main menu
-	local context = ISContextMenu.get(playerNum, x + self:getAbsoluteX(), y + self:getAbsoluteY())
+    if self.symbolsUI:onRightMouseUpMap(x, y) then
+        return true
+    end
+    local playerNum = 0
+    local playerObj = getSpecificPlayer(0)
+    if not playerObj then return end -- Debug in main menu
+    local context = ISContextMenu.get(playerNum, x + self:getAbsoluteX(), y + self:getAbsoluteY())
 
-	local option = context:addOption("Show Cell Grid", self, function(self) self:setShowCellGrid(not self.showCellGrid) end)
-	context:setOptionChecked(option, self.showCellGrid)
-
-    option = context:addOption("Show Coordinates", self, function(self) self.showCoordinates = not self.showCoordinates end)
+    -- Aggiungi l'opzione per mostrare/nascondere il tooltip delle coordinate
+    local optionText = self.showCoordinates and "Hide Coordinates" or "Show Coordinates"
+    local option = context:addOption(optionText, self, function(self) self.showCoordinates = not self.showCoordinates end)
     context:setOptionChecked(option, self.showCoordinates)
+
+    -- Aggiungi l'opzione "Show Cell Grid"
+    option = context:addOption("Show Cell Grid", self, function(self) self:setShowCellGrid(not self.showCellGrid) end)
+    context:setOptionChecked(option, self.showCellGrid)
 
     return true
 end
 
+
 function ISWorldMap:onRightMouseUp(x, y, ...)
-    -- Se il giocatore non è admin, chiama la nuova funzione per i client
-    if not (getDebug() or (isClient() and (getAccessLevel() == "admin"))) then
-        return self:onRightMouseUpClient(x, y)
+    if getDebug() or (isClient() and (getAccessLevel() == "admin")) then
+        if self.symbolsUI:onRightMouseUpMap(x, y) then
+            return true
+        end
+        local playerNum = 0
+        local playerObj = getSpecificPlayer(0)
+        if not playerObj then return end -- Debug in main menu
+
+        -- Chiama la funzione originale per creare il context originale
+        local context = ISContextMenu.get(playerNum, x + self:getAbsoluteX(), y + self:getAbsoluteY())
+        ISWorldMap_onRightMouseUp(self, x, y, ...)
+
+        -- Aggiungi l'opzione per mostrare/nascondere il tooltip delle coordinate
+        local optionText = self.showCoordinates and "Hide Coordinates" or "Show Coordinates"
+        local option = context:addOption(optionText, self, function(self) self.showCoordinates = not self.showCoordinates end)
+        context:setOptionChecked(option, self.showCoordinates)
+        
+    else
+        -- Gestisci il comportamento personalizzato per i non-admin
+        self:onRightMouseUpClient(x, y)
     end
-    
-    -- Altrimenti, chiama la funzione originale per gli admin
-    return ISWorldMap_onRightMouseUp(self, x, y, ...)
+
+    return true
 end
 
+
+-- Sovrascrivi la funzione originale
 ISWorldMap.onRightMouseUp = ISWorldMap.onRightMouseUp
 
 
