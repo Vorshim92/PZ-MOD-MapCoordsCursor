@@ -6,27 +6,45 @@ ISToolTipCord = ISToolTip:derive("ISToolTipCord")
 
 
 local ISWorldMap_render = ISWorldMap.render;
+local ISWorldMap_createChildren = ISWorldMap.createChildren;
+local ISWorldMap_onMouseMove = ISWorldMap.onMouseMove;
+ISWorldMap.showCoordinates = true  
 local ISWorldMap_instance = nil;
 
 
+function ISWorldMap:createChildren(...)
+    -- Chiama la funzione originale
+    ISWorldMap_createChildren(self, ...)
 
-
-function ISWorldMap:render(...)
-    ISWorldMap_instance = self;
-    ISWorldMap_render(self, ...); 
-
-
-    if not self.tooltip then
+    -- Crea e aggiungi il tooltip come child
         self.tooltip = ISToolTipCord:new()
         self.tooltip:initialise()
         self.tooltip:addToUIManager()
-        self.tooltip:setVisible(false)  -- Nasconde il tooltip inizialmente
-    end
-
+        self.tooltip:setVisible(false)
+        self:addChild(self.tooltip)  -- Aggiungi il tooltip come child del pannello della mappa
+    
 end
+
+-- function ISWorldMap:render(...)
+--     -- ISWorldMap_instance = self;
+--     ISWorldMap_render(self, ...); 
+
+--     self.tooltip = ISToolTipCord:new()
+--     self.tooltip:initialise()
+--     self.tooltip:setVisible(false)  -- Nasconde il tooltip inizialmente
+
+--     self.tooltip:addToUIManager()
+
+
+-- end
 
 
 function ISWorldMap:updateTooltip(x, y)
+    if not self.showCoordinates then
+        self.tooltip:setVisible(false)
+        return
+    end
+
     local worldX = self.mapAPI:uiToWorldX(x, y)
     local worldY = self.mapAPI:uiToWorldY(x, y)
     if getWorld():getMetaGrid():isValidChunk(worldX / 10, worldY / 10) then
@@ -40,28 +58,47 @@ function ISWorldMap:updateTooltip(x, y)
 end
 
 
-function ISWorldMap:onMouseMove(dx, dy)
-    if self.symbolsUI:onMouseMoveMap(dx, dy) then
-        return true
-    end
-    if self.dragging then
-        local mouseX = self:getMouseX()
-        local mouseY = self:getMouseY()
-        if not self.dragMoved and math.abs(mouseX - self.dragStartX) <= 4 and math.abs(mouseY - self.dragStartY) <= 4 then
-            return
-        end
-        self.dragMoved = true
-        local worldX = self.mapAPI:uiToWorldX(mouseX, mouseY, self.dragStartZoomF, self.dragStartCX, self.dragStartCY)
-        local worldY = self.mapAPI:uiToWorldY(mouseX, mouseY, self.dragStartZoomF, self.dragStartCX, self.dragStartCY)
-        self.mapAPI:centerOn(self.dragStartCX + self.dragStartWorldX - worldX, self.dragStartCY + self.dragStartWorldY - worldY)
-    end
-
+function ISWorldMap:onMouseMove(dx, dy, ...)
+    -- Chiama la funzione originale
+    ISWorldMap_onMouseMove(self, dx, dy, ...)
+    
     -- Aggiungi il codice per aggiornare il tooltip
-    local x, y = getMouseX(), getMouseY()
+    local x, y = self:getMouseX(), self:getMouseY()
     self:updateTooltip(x, y)
     
     return true
 end
+
+function ISWorldMap:onRightMouseUpClient(x, y)
+	if self.symbolsUI:onRightMouseUpMap(x, y) then
+		return true
+	end
+	local playerNum = 0
+	local playerObj = getSpecificPlayer(0)
+	if not playerObj then return end -- Debug in main menu
+	local context = ISContextMenu.get(playerNum, x + self:getAbsoluteX(), y + self:getAbsoluteY())
+
+	local option = context:addOption("Show Cell Grid", self, function(self) self:setShowCellGrid(not self.showCellGrid) end)
+	context:setOptionChecked(option, self.showCellGrid)
+
+    option = context:addOption("Show Coordinates", self, function(self) self.showCoordinates = not self.showCoordinates end)
+    context:setOptionChecked(option, self.showCoordinates)
+
+    return true
+end
+
+function ISWorldMap:onRightMouseUp(x, y, ...)
+    -- Se il giocatore non è admin, chiama la nuova funzione per i client
+    if not (getDebug() or (isClient() and (getAccessLevel() == "admin"))) then
+        return self:onRightMouseUpClient(x, y)
+    end
+    
+    -- Altrimenti, chiama la funzione originale per gli admin
+    return ISWorldMap_onRightMouseUp(self, x, y, ...)
+end
+
+ISWorldMap.onRightMouseUp = ISWorldMap.onRightMouseUp
+
 
 
 
