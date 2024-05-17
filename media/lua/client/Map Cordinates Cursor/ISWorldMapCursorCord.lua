@@ -32,7 +32,7 @@ function ISWorldMap:updateTooltip(x, y)
         self.tooltip:setVisible(false)
         return
     end
-    if self.symbolsUI:onMouseMoveMap(x, y) then
+    if self.symbolsUI:isMouseOver(x, y) then
         self.tooltip:setVisible(false)
         return
     end
