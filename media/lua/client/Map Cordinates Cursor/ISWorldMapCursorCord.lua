@@ -1,5 +1,5 @@
 require "ISUI/ISPanel"
-require "ISToolTip"  -- Ensure the base tooltip class is loaded
+require "ISToolTip"  
 
 
 ISToolTipCord = ISToolTip:derive("ISToolTipCord")
@@ -20,10 +20,8 @@ function ISWorldMap:createChildren(...)
     -- Crea e aggiungi il tooltip come child
         self.tooltip = ISToolTipCord:new()
         self.tooltip:initialise()
-        self.tooltip:addToUIManager()
         self.tooltip:setVisible(false)
         self:addChild(self.tooltip)  -- Aggiungi il tooltip come child del pannello della mappa
-    
 end
 
 
@@ -36,10 +34,6 @@ function ISWorldMap:updateTooltip(x, y)
         self.tooltip:setVisible(false)
         return
     end
-    -- if self:isMouseOver() then
-    --     self.tooltip:setVisible(false)
-    --     return
-    -- end
 
     if self.buttonPanel and self.buttonPanel:isMouseOver() then
         self.tooltip:setVisible(false)
@@ -54,10 +48,10 @@ function ISWorldMap:updateTooltip(x, y)
     local worldX = self.mapAPI:uiToWorldX(x, y)
     local worldY = self.mapAPI:uiToWorldY(x, y)
     if getWorld():getMetaGrid():isValidChunk(worldX / 10, worldY / 10) then
-        self.tooltip:updateCoordinates(worldX, worldY)
-        self.tooltip:setVisible(true)
+        self.tooltip.description = "X: " .. math.floor(worldX) .. " Y: " .. math.floor(worldY)
         self.tooltip:setX(x + 32)  -- Aggiusta la posizione del tooltip rispetto al cursore
         self.tooltip:setY(y + 10)
+        self.tooltip:setVisible(true)
     else
         self.tooltip:setVisible(false)
     end
@@ -143,24 +137,14 @@ function ISToolTipCord:new()
     o.backgroundColor = {r = 0, g = 0, b = 0, a = 0.5}
     o.width = 0
     o.height = 0
-    o.anchorLeft = true
+    o.anchorLeft = false
     o.anchorRight = false
-    o.anchorTop = true
+    o.anchorTop = false
     o.anchorBottom = false
-    o.descriptionPanel = ISRichTextPanel:new(0, 0, 0, 0)
-    o.descriptionPanel.marginLeft = 0
-    o.descriptionPanel.marginRight = 0
-    o.descriptionPanel:initialise()
-    o.descriptionPanel:instantiate()
-    o.descriptionPanel:noBackground()
-    o.descriptionPanel.backgroundColor = {r = 0, g = 0, b = 0, a = 0.3}
-    o.descriptionPanel.borderColor = {r = 1, g = 1, b = 1, a = 0.1}
     o.owner = nil
     o.followMouse = true
     return o
 end
 
 
-function ISToolTipCord:updateCoordinates(worldX, worldY)
-    self.description = "X: " .. math.floor(worldX) .. " Y: " .. math.floor(worldY)
-end
+
