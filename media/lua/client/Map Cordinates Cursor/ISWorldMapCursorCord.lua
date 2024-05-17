@@ -8,6 +8,7 @@ ISToolTipCord = ISToolTip:derive("ISToolTipCord")
 local ISWorldMap_render = ISWorldMap.render;
 local ISWorldMap_createChildren = ISWorldMap.createChildren;
 local ISWorldMap_onMouseMove = ISWorldMap.onMouseMove;
+local ISWorldMap_onRightMouseUp = ISWorldMap.onRightMouseUp
 ISWorldMap.showCoordinates = true  
 local ISWorldMap_instance = nil;
 
@@ -98,6 +99,7 @@ function ISWorldMap:onRightMouseUp(x, y, ...)
 end
 
 ISWorldMap.onRightMouseUp = ISWorldMap.onRightMouseUp
+
 
 
 
