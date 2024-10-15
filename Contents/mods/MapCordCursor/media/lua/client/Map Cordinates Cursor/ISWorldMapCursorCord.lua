@@ -129,7 +129,7 @@ function ISWorldMap:onRightMouseUp(x, y, ...)
     
     -- Aggiungi l'opzione per mostrare/nascondere il tooltip delle coordinate (per tutti)
     local optionText = self.showCoordinates and "Hide Coordinates" or "Show Coordinates"
-    local option = context:addOption(optionText, self, function(self)
+    local option = context:addOptionOnTop(optionText, self, function(self)
          self:toogleTooltip(not self.showCoordinates)
         end)
     context:setOptionChecked(option, self.showCoordinates)
