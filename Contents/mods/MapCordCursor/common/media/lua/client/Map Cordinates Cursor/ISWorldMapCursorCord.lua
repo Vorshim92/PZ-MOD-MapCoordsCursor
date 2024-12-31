@@ -5,10 +5,9 @@ require "ISToolTip"
 ISToolTipCord = ISToolTip:derive("ISToolTipCord")
 
 local MGRS = false
-if getActivatedMods():contains("MGRS (FMCCYAYFGLE)") then
+if getActivatedMods():contains("\\MGRS (FMCCYAYFGLE)") then
     MGRS = true
 end
-
 -- local ISWorldMap_render = ISWorldMap.render;
 local ISWorldMap_createChildren = ISWorldMap.createChildren;
 local ISWorldMap_onMouseMove = ISWorldMap.onMouseMove;
@@ -88,7 +87,7 @@ end
 local ISWorldMap_render = ISWorldMap.render
 function ISWorldMap:render()
     ISWorldMap_render(self)
-    if MGRS and self.showCellGrid and self.symbolsUI:isMouseOver() then
+    if (MGRS and self.showCellGrid) and (self.symbolsUI:isMouseOver() or self.buttonPanel and self.buttonPanel:isMouseOver()) then
         self.currentGridID = nil
     end
     if self.showCoordinates then 
@@ -101,7 +100,9 @@ end
 
 function ISWorldMap:onMouseMove(dx, dy)
     ISWorldMap_onMouseMove(self, dx, dy)
-    
+    if (MGRS and self.showCellGrid) and (self.symbolsUI:isMouseOver() or self.buttonPanel and self.buttonPanel:isMouseOver()) then
+        self.currentGridID = nil
+    end
     local x, y = self:getMouseX(), self:getMouseY()
     self:updateTooltip(x, y)
     
