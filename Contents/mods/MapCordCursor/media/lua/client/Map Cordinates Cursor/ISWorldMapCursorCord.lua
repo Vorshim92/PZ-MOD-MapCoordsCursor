@@ -9,6 +9,11 @@ if getActivatedMods():contains("MGRS (FMCCYAYFGLE)") then
     MGRS = true
 end
 
+local MDZ = false
+if getActivatedMods():contains("MoreDifficultZones") then
+    MDZ = true
+end
+
 -- local ISWorldMap_render = ISWorldMap.render;
 local ISWorldMap_createChildren = ISWorldMap.createChildren;
 local ISWorldMap_onMouseMove = ISWorldMap.onMouseMove;
@@ -78,6 +83,10 @@ function ISWorldMap:updateTooltip(x, y)
             y = y + 50
         end
         self.tooltip:setY(y + 10)
+        if MDZ then
+            -- Ottieni tierLevel e zoneName attuali
+            self.tooltip.currentTierLevel, self.tooltip.currentZoneName = checkZoneAtXY(worldX, worldY)
+        end
     else
         self.tooltip:setVisible(false)
         -- self.tooltip:removeFromUIManager()
@@ -91,10 +100,24 @@ function ISWorldMap:render()
     if MGRS and self.showCellGrid and self.symbolsUI:isMouseOver() then
         self.currentGridID = nil
     end
-    if self.showCoordinates then 
-        self.tooltip.description = "X: " .. self.tooltip.coordX .. " Y: " .. self.tooltip.coordY
+    if self.showCoordinates then
+        -- Inizializza il testo con coordinate X e Y
+        self.tooltip.description = string.format(
+            "<RGB:1,1,0>X: <RGB:1,1,1>%d <RGB:1,1,0>Y: <RGB:1,1,1>%d\n",
+            self.tooltip.coordX,
+            self.tooltip.coordY
+        )
+    
+        -- Se MDZ è definito, aggiungi Tier e Zone
+        if MDZ and self.tooltip.currentTierLevel and self.tooltip.currentZoneName then
+            self.tooltip.description = self.tooltip.description .. string.format(
+                " <LINE> <RGB:0,1,0>T: <RGB:1,1,1>%d - <RGB:0,1,0>Z: <RGB:1,1,1>%s",
+                self.tooltip.currentTierLevel,
+                self.tooltip.currentZoneName
+            )
+        end
     end
-
+    
 end
  
 
