@@ -85,7 +85,8 @@ function ISWorldMap:updateTooltip(x, y)
         self.tooltip:setY(y + 10)
         if MDZ then
             -- Ottieni tierLevel e zoneName attuali
-            self.tooltip.currentTierLevel, self.tooltip.currentZoneName = checkZoneAtXY(worldX, worldY)
+            self.tooltip.currentTierLevel, self.tooltip.currentZoneName, self.x, self.y, self.control, self.toxic, self.sprinter, self.pinpoint, self.cognition = checkZoneAtXY(worldX, worldY)
+            if self.tooltip.currentZoneName == "Unnamed Zone" then self.tooltip.currentZoneName = "Default" end
         end
     else
         self.tooltip:setVisible(false)
@@ -109,17 +110,29 @@ function ISWorldMap:render()
         )
     
         -- Se MDZ è definito, aggiungi Tier e Zone
-        if MDZ and self.tooltip.currentTierLevel and self.tooltip.currentZoneName then
-            self.tooltip.description = self.tooltip.description .. string.format(
-                " <LINE> <RGB:0,1,0>T: <RGB:1,1,1>%d - <RGB:0,1,0>Z: <RGB:1,1,1>%s",
-                self.tooltip.currentTierLevel,
-                self.tooltip.currentZoneName
-            )
+        if MDZ then 
+            if self.tooltip.currentTierLevel and self.tooltip.currentZoneName then
+                self.tooltip.description = self.tooltip.description .. string.format(
+                    " <LINE> <RGB:0,1,0>T: <RGB:1,1,1>%d - <RGB:0,1,0>Z: <RGB:1,1,1>%s",
+                    self.tooltip.currentTierLevel,
+                    self.tooltip.currentZoneName
+                )
+            end
+            if self.toxic then
+                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/textures/Icon_GlobalKillyne_on.png,16,16>" --cambiare le icone
+            else
+                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/textures/Icon_GlobalKillyne_off.png,16,16>" --cambiare le icone
+            end
+            if self.sprinter then
+                self.tooltip.description = self.tooltip.description .. string.format(
+                    " <LINE> <RGB:0,1,0>Sprinter: <RGB:1,1,1>%d%%",
+                    self.sprinter
+                )
+            end
         end
     end
-    
 end
- 
+
 
 
 function ISWorldMap:onMouseMove(dx, dy)
