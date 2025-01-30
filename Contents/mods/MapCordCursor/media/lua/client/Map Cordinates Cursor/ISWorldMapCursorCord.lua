@@ -113,7 +113,7 @@ function ISWorldMap:render()
         if MDZ then 
             if self.tooltip.currentTierLevel and self.tooltip.currentZoneName then
                 self.tooltip.description = self.tooltip.description .. string.format(
-                    " <LINE> <RGB:0,1,0>T: <RGB:1,1,1>%d - <RGB:0,1,0>Z: <RGB:1,1,1>%s",
+                    " <LINE> <RGB:0,1,0>T: <RGB:1,1,1>%d  <RGB:0,1,0>Z: <RGB:1,1,1>%s",
                     self.tooltip.currentTierLevel,
                     self.tooltip.currentZoneName
                 )
