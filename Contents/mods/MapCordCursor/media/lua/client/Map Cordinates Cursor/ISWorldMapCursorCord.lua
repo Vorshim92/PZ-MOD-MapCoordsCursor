@@ -119,9 +119,9 @@ function ISWorldMap:render()
                 )
             end
             if self.toxic then
-                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/textures/Icon_GlobalKillyne_on.png,16,16>" --cambiare le icone
+                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/ui/biohazardOn.png,16,16>"
             else
-                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/textures/Icon_GlobalKillyne_off.png,16,16>" --cambiare le icone
+                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/ui/biohazardOff.png,16,16>"
             end
             if self.sprinter then
                 self.tooltip.description = self.tooltip.description .. string.format(
