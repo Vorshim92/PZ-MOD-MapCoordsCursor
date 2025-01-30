@@ -10,7 +10,7 @@ if getActivatedMods():contains("MGRS (FMCCYAYFGLE)") then
 end
 
 local MDZ = false
-if getActivatedMods():contains("MoreDifficultZones") then
+if getActivatedMods():contains("MoreDifficultZones") or getActivatedMods():contains("TierZonyne") then
     MDZ = true
 end
 
