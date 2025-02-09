@@ -104,7 +104,7 @@ function ISWorldMap:render()
     if self.showCoordinates then
         -- Inizializza il testo con coordinate X e Y
         self.tooltip.description = string.format(
-            "<RGB:1,1,0>X: <RGB:1,1,1>%d <RGB:1,1,0>Y: <RGB:1,1,1>%d\n",
+            "<RGB:1,1,0>X: <SPACE><RGB:1,1,1>%d <SPACE><RGB:1,1,0>Y: <SPACE><RGB:1,1,1>%d\n",
             self.tooltip.coordX,
             self.tooltip.coordY
         )
@@ -113,19 +113,19 @@ function ISWorldMap:render()
         if MDZ then 
             if self.tooltip.currentTierLevel and self.tooltip.currentZoneName then
                 self.tooltip.description = self.tooltip.description .. string.format(
-                    " <LINE> <RGB:0,1,0>T: <RGB:1,1,1>%d - <RGB:0,1,0>Z: <RGB:1,1,1>%s",
+                    " <LINE> <RGB:0,1,0>T: <SPACE><RGB:1,1,1>%d  <SPACE><RGB:0,1,0>Z: <SPACE><RGB:1,1,1>%s",
                     self.tooltip.currentTierLevel,
                     self.tooltip.currentZoneName
                 )
             end
             if self.toxic then
-                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/ui/biohazardOn.png,16,16>"
+                self.tooltip.description = self.tooltip.description .. " <SPACE><IMAGE:media/ui/biohazardOn.png,16,16>"
             else
-                self.tooltip.description = self.tooltip.description .. " <IMAGE:media/ui/biohazardOff.png,16,16>"
+                self.tooltip.description = self.tooltip.description .. " <SPACE><IMAGE:media/ui/biohazardOff.png,16,16>"
             end
             if self.sprinter then
                 self.tooltip.description = self.tooltip.description .. string.format(
-                    " <LINE> <RGB:0,1,0>Sprinter: <RGB:1,1,1>%d%%",
+                    " <LINE> <RGB:0,1,0>Sprinter: <SPACE><RGB:1,1,1>%d%%",
                     self.sprinter
                 )
             end
